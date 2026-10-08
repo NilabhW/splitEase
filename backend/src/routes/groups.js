@@ -9,6 +9,7 @@ router.get('/', c.list);
 router.post('/', validate(c.createSchema), c.create);
 router.post('/join', validate(c.joinSchema), c.join);
 router.get('/:groupId', requireGroupMember, c.detail);
+router.get('/:groupId/balances', requireGroupMember, c.balances);
 router.use('/:groupId/expenses', requireGroupMember, require('./expenses'));
 
 module.exports = router;

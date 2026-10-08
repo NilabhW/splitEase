@@ -3,6 +3,7 @@ const { z } = require('zod');
 const Group = require('../models/Group');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
+const { groupBalances, myNetBalances } = require('../services/ledgerService');
 
 const createSchema = z.object({
   name: z.string().trim().min(2).max(60),
@@ -37,8 +38,8 @@ const create = asyncHandler(async (req, res) => {
 
 const list = asyncHandler(async (req, res) => {
   const groups = await populate(Group.find({ members: req.user._id }).sort({ updatedAt: -1 }));
-  // netBalance is filled in once expenses exist (balances phase)
-  const data = groups.map((g) => ({ ...g.toObject(), netBalance: 0 }));
+  const nets = await myNetBalances(groups.map((g) => g._id), req.user._id);
+  const data = groups.map((g) => ({ ...g.toObject(), netBalance: nets[String(g._id)] }));
   res.json({ success: true, data: { groups: data } });
 });
 
@@ -58,4 +59,8 @@ const detail = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { group } });
 });
 
-module.exports = { create, list, join, detail, createSchema, joinSchema };
+const balances = asyncHandler(async (req, res) => {
+  res.json({ success: true, data: await groupBalances(req.group) });
+});
+
+module.exports = { create, list, join, detail, balances, createSchema, joinSchema };

@@ -6,12 +6,16 @@ import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
 import ExpensesTab from '../components/ExpensesTab';
 import ExpenseModal from '../components/ExpenseModal';
+import BalancesTab from '../components/BalancesTab';
 import useAsync from '../hooks/useAsync';
 import { getGroup } from '../api/groups';
+
+const TABS = ['Expenses', 'Balances'];
 
 export default function GroupDetail() {
   const { id } = useParams();
   const { data: group, loading, error, reload } = useAsync(() => getGroup(id), [id]);
+  const [tab, setTab] = useState('Expenses');
   // bumping version makes tabs refetch after anything changes money in the group
   const [version, setVersion] = useState(0);
   const [editing, setEditing] = useState(null); // null | 'new' | expense
@@ -46,32 +50,40 @@ export default function GroupDetail() {
       </div>
       {group.description && <p className="text-gray-600">{group.description}</p>}
 
-      <section className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-white p-3 text-sm">
+      <ul aria-label="Members" className="mt-3 flex flex-wrap gap-1.5 text-sm">
+        {group.members.map((m) => (
+          <li key={m._id} className="rounded-full bg-gray-200 px-2.5 py-0.5">{m.name}</li>
+        ))}
+      </ul>
+
+      <section className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border bg-white p-3 text-sm">
         <span className="text-gray-500">Invite code</span>
         <code className="rounded bg-gray-100 px-2 py-0.5 font-mono tracking-widest">{group.inviteCode}</code>
         <button onClick={() => copy(group.inviteCode, 'Code')} className="text-emerald-700 underline">Copy code</button>
         <button onClick={() => copy(joinLink, 'Invite link')} className="text-emerald-700 underline">Copy link</button>
       </section>
 
-      <section className="mt-6">
-        <h2 className="mb-2 font-semibold">Expenses</h2>
-        <ExpensesTab
-          group={group}
-          version={version}
-          onAdd={() => setEditing('new')}
-          onEdit={setEditing}
-          onChanged={changed}
-        />
-      </section>
+      <div role="tablist" className="mt-6 flex gap-1 border-b">
+        {TABS.map((t) => (
+          <button
+            key={t}
+            role="tab"
+            aria-selected={tab === t}
+            onClick={() => setTab(t)}
+            className={`-mb-px border-b-2 px-4 py-2 ${tab === t ? 'border-emerald-600 font-semibold text-emerald-700' : 'border-transparent text-gray-500'}`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
 
-      <section className="mt-6">
-        <h2 className="mb-2 font-semibold">Members ({group.members.length})</h2>
-        <ul className="divide-y rounded-xl border bg-white">
-          {group.members.map((m) => (
-            <li key={m._id} className="px-4 py-2">{m.name}</li>
-          ))}
-        </ul>
-      </section>
+      <div role="tabpanel" className="mt-4">
+        {tab === 'Expenses' && (
+          <ExpensesTab group={group} version={version} onAdd={() => setEditing('new')} onEdit={setEditing} onChanged={changed} />
+        )}
+        {tab === 'Balances' && <BalancesTab group={group} version={version} />}
+      </div>
+
       {editing && (
         <ExpenseModal
           group={group}
