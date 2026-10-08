@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/health', require('./routes/health'));
+app.use('/api/auth', require('./routes/auth'));
 
 app.use(notFound);
 app.use(errorHandler);

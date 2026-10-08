@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node ./node_modules/nodemon/bin/nodemon.js src/server.js",
-    "test": "node ./node_modules/jest/bin/jest.js --runInBand --forceExit"
+    "test": "node ./node_modules/vitest/vitest.mjs run"
   },
   "keywords": [],
   "author": "",
@@ -25,15 +25,9 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "jest": "^30.5.2",
     "mongodb-memory-server": "^11.3.0",
     "nodemon": "^3.1.14",
-    "supertest": "^7.3.1"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "setupFiles": [
-      "./tests/setupEnv.js"
-    ]
+    "supertest": "^7.3.1",
+    "vitest": "^2.1.9"
   }
 }
