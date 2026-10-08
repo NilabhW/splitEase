@@ -11,6 +11,10 @@ function errorHandler(err, req, res, next) {
     status = 409;
     code = 'DUPLICATE';
     message = 'Resource already exists';
+  } else if (err.name === 'ValidationError') {
+    status = 400;
+    code = 'VALIDATION_ERROR';
+    message = Object.values(err.errors).map((e) => e.message).join('; ');
   } else if (err.name === 'CastError') {
     status = 404;
     code = 'NOT_FOUND';
