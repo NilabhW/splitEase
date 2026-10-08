@@ -70,7 +70,9 @@ describe('auth flow', () => {
     api.get.mockImplementation((url) =>
       url === '/auth/me'
         ? Promise.reject({ response: { status: 401 } })
-        : Promise.resolve({ data: { data: { group: { _id: 'g1', name: 'Goa Trip', inviteCode: 'ABCD1234', members: [] } } } })
+        : url.includes('/expenses')
+          ? Promise.resolve({ data: { data: { expenses: [], page: 1, totalPages: 1 } } })
+          : Promise.resolve({ data: { data: { group: { _id: 'g1', name: 'Goa Trip', inviteCode: 'ABCD1234', members: [] } } } })
     );
     api.post.mockImplementation((url) =>
       Promise.resolve({

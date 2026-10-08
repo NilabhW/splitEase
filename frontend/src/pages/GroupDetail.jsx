@@ -1,14 +1,21 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Layout from '../components/Layout';
 import Spinner from '../components/Spinner';
 import ErrorState from '../components/ErrorState';
+import ExpensesTab from '../components/ExpensesTab';
+import ExpenseModal from '../components/ExpenseModal';
 import useAsync from '../hooks/useAsync';
 import { getGroup } from '../api/groups';
 
 export default function GroupDetail() {
   const { id } = useParams();
   const { data: group, loading, error, reload } = useAsync(() => getGroup(id), [id]);
+  // bumping version makes tabs refetch after anything changes money in the group
+  const [version, setVersion] = useState(0);
+  const [editing, setEditing] = useState(null); // null | 'new' | expense
+  const changed = () => setVersion((v) => v + 1);
 
   const copy = async (text, label) => {
     try {
@@ -33,7 +40,10 @@ export default function GroupDetail() {
   return (
     <Layout>
       <Link to="/dashboard" className="text-sm text-gray-500">← All groups</Link>
-      <h1 className="mt-1 text-2xl font-bold">{group.name}</h1>
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">{group.name}</h1>
+        <button onClick={() => setEditing('new')} className="rounded bg-emerald-600 px-3 py-1.5 text-white">Add expense</button>
+      </div>
       {group.description && <p className="text-gray-600">{group.description}</p>}
 
       <section className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border bg-white p-3 text-sm">
@@ -44,6 +54,17 @@ export default function GroupDetail() {
       </section>
 
       <section className="mt-6">
+        <h2 className="mb-2 font-semibold">Expenses</h2>
+        <ExpensesTab
+          group={group}
+          version={version}
+          onAdd={() => setEditing('new')}
+          onEdit={setEditing}
+          onChanged={changed}
+        />
+      </section>
+
+      <section className="mt-6">
         <h2 className="mb-2 font-semibold">Members ({group.members.length})</h2>
         <ul className="divide-y rounded-xl border bg-white">
           {group.members.map((m) => (
@@ -51,6 +72,17 @@ export default function GroupDetail() {
           ))}
         </ul>
       </section>
+      {editing && (
+        <ExpenseModal
+          group={group}
+          expense={editing === 'new' ? null : editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
+            changed();
+          }}
+        />
+      )}
     </Layout>
   );
 }
