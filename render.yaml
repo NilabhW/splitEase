@@ -1,0 +1,18 @@
+# Render blueprint for the API. Secrets are set in the Render dashboard (sync: false), never here.
+services:
+  - type: web
+    name: splitease-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false
