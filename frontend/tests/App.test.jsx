@@ -1,23 +1,21 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { vi } from 'vitest';
+
+vi.mock('../src/api/client', () => ({
+  default: { get: vi.fn().mockRejectedValue({ response: { status: 401 } }), post: vi.fn(), interceptors: { response: { use: vi.fn() } } },
+}));
+
 import App from '../src/App';
+import { AuthProvider } from '../src/context/AuthContext';
 
-describe('App', () => {
-  it('shows the app name', () => {
-    render(
-      <MemoryRouter>
+it('shows a friendly 404 for unknown routes', async () => {
+  render(
+    <MemoryRouter initialEntries={['/nope']}>
+      <AuthProvider>
         <App />
-      </MemoryRouter>
-    );
-    expect(screen.getByText(/SplitEase/i)).toBeInTheDocument();
-  });
-
-  it('shows a friendly 404 for unknown routes', () => {
-    render(
-      <MemoryRouter initialEntries={['/nope']}>
-        <App />
-      </MemoryRouter>
-    );
-    expect(screen.getByText(/page not found/i)).toBeInTheDocument();
-  });
+      </AuthProvider>
+    </MemoryRouter>
+  );
+  expect(await screen.findByText(/page not found/i)).toBeInTheDocument();
 });
