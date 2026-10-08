@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const c = require('../controllers/groupController');
+const settlements = require('../controllers/settlementController');
 const auth = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const requireGroupMember = require('../middleware/requireGroupMember');
@@ -10,6 +11,9 @@ router.post('/', validate(c.createSchema), c.create);
 router.post('/join', validate(c.joinSchema), c.join);
 router.get('/:groupId', requireGroupMember, c.detail);
 router.get('/:groupId/balances', requireGroupMember, c.balances);
+router.get('/:groupId/activity', requireGroupMember, c.activity);
+router.delete('/:groupId/leave', requireGroupMember, c.leave);
+router.post('/:groupId/settlements', requireGroupMember, validate(settlements.settlementSchema), settlements.create);
 router.use('/:groupId/expenses', requireGroupMember, require('./expenses'));
 
 module.exports = router;
