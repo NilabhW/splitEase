@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node ./node_modules/nodemon/bin/nodemon.js src/server.js",
-    "test": "node ./node_modules/vitest/vitest.mjs run"
+    "test": "node ./node_modules/vitest/vitest.mjs run",
+    "seed": "node scripts/seed.js"
   },
   "keywords": [],
   "author": "",
