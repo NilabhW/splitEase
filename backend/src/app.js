@@ -15,6 +15,7 @@ app.use(cookieParser());
 
 app.use('/api/health', require('./routes/health'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/groups', require('./routes/groups'));
 
 app.use(notFound);
 app.use(errorHandler);
