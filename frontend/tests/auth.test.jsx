@@ -26,6 +26,12 @@ const renderAt = (path) =>
 
 beforeEach(() => vi.clearAllMocks());
 
+// logged-in: /auth/me returns the user and the dashboard's /groups fetch returns no groups
+const loggedIn = (user) =>
+  api.get.mockImplementation((url) =>
+    Promise.resolve({ data: { data: url === '/auth/me' ? { user } : { groups: [] } } })
+  );
+
 describe('auth flow', () => {
   it('redirects logged-out users from /dashboard to login', async () => {
     api.get.mockRejectedValue({ response: { status: 401 } });
@@ -36,6 +42,11 @@ describe('auth flow', () => {
   it('logs in and lands on the dashboard', async () => {
     api.get.mockRejectedValue({ response: { status: 401 } });
     api.post.mockResolvedValue({ data: { data: { user: { _id: '1', name: 'Asha' } } } });
+    api.get.mockImplementation((url) =>
+      url === '/auth/me'
+        ? Promise.reject({ response: { status: 401 } })
+        : Promise.resolve({ data: { data: { groups: [] } } })
+    );
     renderAt('/login');
     await userEvent.type(await screen.findByLabelText(/email/i), 'a@b.com');
     await userEvent.type(screen.getByLabelText(/password/i), 'password123');
@@ -55,8 +66,27 @@ describe('auth flow', () => {
     expect(api.post).not.toHaveBeenCalled();
   });
 
+  it('returns to the invite link after logging in', async () => {
+    api.get.mockImplementation((url) =>
+      url === '/auth/me'
+        ? Promise.reject({ response: { status: 401 } })
+        : Promise.resolve({ data: { data: { group: { _id: 'g1', name: 'Goa Trip', inviteCode: 'ABCD1234', members: [] } } } })
+    );
+    api.post.mockImplementation((url) =>
+      Promise.resolve({
+        data: { data: url === '/auth/login' ? { user: { _id: '1', name: 'Asha' } } : { group: { _id: 'g1', name: 'Goa Trip' } } },
+      })
+    );
+    renderAt('/join/ABCD1234');
+    await userEvent.type(await screen.findByLabelText(/email/i), 'a@b.com');
+    await userEvent.type(screen.getByLabelText(/password/i), 'password123');
+    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    expect(await screen.findByRole('heading', { name: 'Goa Trip' })).toBeInTheDocument();
+    expect(api.post).toHaveBeenCalledWith('/groups/join', { inviteCode: 'ABCD1234' });
+  });
+
   it('shows dashboard for an already logged-in user at /login', async () => {
-    api.get.mockResolvedValue({ data: { data: { user: { _id: '1', name: 'Asha' } } } });
+    loggedIn({ _id: '1', name: 'Asha' });
     renderAt('/login');
     await waitFor(() => expect(screen.getByText(/your groups/i)).toBeInTheDocument());
   });

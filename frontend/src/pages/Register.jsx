@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { errorMessage } from '../utils/apiError';
@@ -7,6 +7,7 @@ import { errorMessage } from '../utils/apiError';
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const from = useLocation().state?.from || '/dashboard';
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -30,7 +31,7 @@ export default function Register() {
     try {
       await register(form.name, form.email, form.password);
       toast.success('Account created');
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (err) {
       toast.error(errorMessage(err));
     } finally {
@@ -54,7 +55,7 @@ export default function Register() {
       <button disabled={submitting} className="w-full rounded bg-emerald-600 p-2 text-white disabled:opacity-50">
         {submitting ? 'Creating…' : 'Sign up'}
       </button>
-      <p>Have an account? <Link to="/login" className="text-emerald-600 underline">Log in</Link></p>
+      <p>Have an account? <Link to="/login" state={{ from }} className="text-emerald-600 underline">Log in</Link></p>
     </form>
   );
 }

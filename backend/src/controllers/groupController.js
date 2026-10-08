@@ -46,7 +46,7 @@ const join = asyncHandler(async (req, res) => {
   const group = await Group.findOne({ inviteCode: req.body.inviteCode.toUpperCase() });
   if (!group) throw new AppError(404, 'NOT_FOUND', 'Invalid invite code');
   if (group.members.some((m) => m.equals(req.user._id))) {
-    throw new AppError(409, 'ALREADY_MEMBER', 'You are already in this group');
+    throw new AppError(409, 'ALREADY_MEMBER', 'You are already in this group', { groupId: group._id });
   }
   group.members.push(req.user._id);
   await group.save();

@@ -26,7 +26,9 @@ function errorHandler(err, req, res, next) {
     message = 'Something went wrong';
     if (process.env.NODE_ENV !== 'test') console.error(err);
   }
-  res.status(status).json({ success: false, error: { code, message } });
+  const error = { code, message };
+  if (err instanceof AppError && err.details) error.details = err.details;
+  res.status(status).json({ success: false, error });
 }
 
 module.exports = { notFound, errorHandler };

@@ -4,6 +4,8 @@ import { ProtectedRoute, PublicOnlyRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import GroupDetail from './pages/GroupDetail';
+import JoinGroup from './pages/JoinGroup';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -15,6 +17,8 @@ export default function App() {
         <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
         <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/groups/:id" element={<ProtectedRoute><GroupDetail /></ProtectedRoute>} />
+        <Route path="/join/:code" element={<ProtectedRoute><JoinGroup /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

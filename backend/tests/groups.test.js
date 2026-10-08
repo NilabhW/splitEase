@@ -50,7 +50,9 @@ describe('groups', () => {
     const join = await b.agent.post('/api/groups/join').send({ inviteCode: group.inviteCode });
     expect(join.status).toBe(200);
     expect(join.body.data.group.members).toHaveLength(2);
-    expect((await b.agent.post('/api/groups/join').send({ inviteCode: group.inviteCode })).status).toBe(409);
+    const again = await b.agent.post('/api/groups/join').send({ inviteCode: group.inviteCode.toLowerCase() });
+    expect(again.status).toBe(409);
+    expect(again.body.error.details).toEqual({ groupId: group._id });
     expect((await b.agent.post('/api/groups/join').send({ inviteCode: 'ZZZZZZZZ' })).status).toBe(404);
   });
 

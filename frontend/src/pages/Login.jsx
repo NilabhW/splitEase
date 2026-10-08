@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { errorMessage } from '../utils/apiError';
@@ -7,6 +7,7 @@ import { errorMessage } from '../utils/apiError';
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const from = useLocation().state?.from || '/dashboard';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -16,7 +17,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (err) {
       toast.error(errorMessage(err));
     } finally {
@@ -36,7 +37,7 @@ export default function Login() {
       <button disabled={submitting} className="w-full rounded bg-emerald-600 p-2 text-white disabled:opacity-50">
         {submitting ? 'Logging in…' : 'Log in'}
       </button>
-      <p>No account? <Link to="/register" className="text-emerald-600 underline">Sign up</Link></p>
+      <p>No account? <Link to="/register" state={{ from }} className="text-emerald-600 underline">Sign up</Link></p>
     </form>
   );
 }
