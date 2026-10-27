@@ -2,7 +2,7 @@
 
 Split shared expenses with friends, roommates and trip-mates, see who owes whom, and settle up in the fewest payments possible.
 
-**Live app:** _add Vercel URL after deploy_ · **API:** _add API URL after deploy_ · **Demo video:** _add link_
+**Live app:** https://split-ease-1iqb.vercel.app · **API:** https://split-ease-mu-flame.vercel.app/api/health · **Demo video:** _add link_
 
 **Demo login:** `asha@demo.com` / `demo1234` (also `bob@demo.com`, `cara@demo.com`), already a member of a seeded "Goa Trip" group.
 
@@ -87,10 +87,10 @@ Tests: `npm test` in `backend/` (API and services, using an in-memory MongoDB) a
 | --- | --- | --- | --- |
 | `MONGO_URI` | backend | `mongodb+srv://user:pass@cluster/splitease` | Database connection |
 | `JWT_SECRET` | backend | long random string | Signs session tokens (required) |
-| `CLIENT_URL` | backend | `https://splitease.vercel.app` | CORS allow-list origin |
+| `CLIENT_URL` | backend | `https://split-ease-1iqb.vercel.app` | CORS allow-list origin |
 | `NODE_ENV` | backend | `production` | Enables secure, cross-site cookies |
 | `PORT` | backend | `5001` | API port (5000 clashes with AirPlay on macOS) |
-| `VITE_API_URL` | frontend | `https://splitease-api.vercel.app/api` | API base URL |
+| `VITE_API_URL` | frontend | `https://split-ease-mu-flame.vercel.app/api` | API base URL |
 
 Only `.env.example` files are committed. Real `.env` files are git-ignored.
 
@@ -101,4 +101,4 @@ Only `.env.example` files are committed. Real `.env` files are git-ignored.
 - **Frontend:** Vercel project with root `frontend/` and `VITE_API_URL` set. `vercel.json` rewrites all routes to `index.html` so deep links work on refresh.
 - **Demo data:** run `npm run seed` in `backend/` with `MONGO_URI` pointing at Atlas.
 
-Links: _live app and API URLs go here after deploy._
+Links: app https://split-ease-1iqb.vercel.app · API https://split-ease-mu-flame.vercel.app/api
