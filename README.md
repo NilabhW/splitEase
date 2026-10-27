@@ -2,7 +2,7 @@
 
 Split shared expenses with friends, roommates and trip-mates, see who owes whom, and settle up in the fewest payments possible.
 
-**Live app:** _add Vercel URL after deploy_ · **API:** _add Render URL after deploy_ · **Demo video:** _add link_
+**Live app:** _add Vercel URL after deploy_ · **API:** _add API URL after deploy_ · **Demo video:** _add link_
 
 **Demo login:** `asha@demo.com` / `demo1234` (also `bob@demo.com`, `cara@demo.com`), already a member of a seeded "Goa Trip" group.
 
@@ -40,12 +40,12 @@ Every data screen handles loading, empty, error (with retry) and success states.
 | Auth | JWT in httpOnly cookie, bcrypt |
 | Security | helmet, CORS allow-list, express-rate-limit on login/register |
 | Testing | Vitest, supertest, mongodb-memory-server (backend); Vitest + Testing Library (frontend) |
-| Hosting | Vercel (frontend), Render (API), Atlas (DB) |
+| Hosting | Vercel (frontend + API as a serverless function), Atlas (DB) |
 
 ## Architecture
 
 ```
-React SPA (Vercel) ──HTTPS + cookie──▶ Express REST API (Render) ──▶ MongoDB Atlas
+React SPA (Vercel) ──HTTPS + cookie──▶ Express REST API (Vercel) ──▶ MongoDB Atlas
                                            │
               routes → middleware (auth, requireGroupMember, Zod validate)
                      → controllers → services (pure logic) → Mongoose models
@@ -90,14 +90,14 @@ Tests: `npm test` in `backend/` (API and services, using an in-memory MongoDB) a
 | `CLIENT_URL` | backend | `https://splitease.vercel.app` | CORS allow-list origin |
 | `NODE_ENV` | backend | `production` | Enables secure, cross-site cookies |
 | `PORT` | backend | `5001` | API port (5000 clashes with AirPlay on macOS) |
-| `VITE_API_URL` | frontend | `https://splitease-api.onrender.com/api` | API base URL |
+| `VITE_API_URL` | frontend | `https://splitease-api.vercel.app/api` | API base URL |
 
 Only `.env.example` files are committed. Real `.env` files are git-ignored.
 
 ## Deployment
 
-- **Database:** MongoDB Atlas free M0 cluster. Network access is 0.0.0.0/0 because Render's IPs change.
-- **API:** Render web service from `render.yaml` (root `backend/`, start `node src/server.js`, health check `/api/health`). Set `MONGO_URI` and `CLIENT_URL` in the dashboard. Free instances sleep when idle, so the first request can take about 30 seconds.
+- **Database:** MongoDB Atlas free M0 cluster. Network access is 0.0.0.0/0 because Vercel functions have no fixed IPs.
+- **API:** a second Vercel project with root `backend/` and Framework Preset "Other". `backend/api/index.js` wraps the Express app as a serverless function and caches the MongoDB connection across warm invocations; `backend/vercel.json` routes every path to it. Set `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL` and `NODE_ENV=production`. Local development still uses `src/server.js`.
 - **Frontend:** Vercel project with root `frontend/` and `VITE_API_URL` set. `vercel.json` rewrites all routes to `index.html` so deep links work on refresh.
 - **Demo data:** run `npm run seed` in `backend/` with `MONGO_URI` pointing at Atlas.
 

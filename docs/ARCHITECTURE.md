@@ -4,7 +4,7 @@
 
 ```
 ┌──────────────────────┐   HTTPS, JSON, httpOnly cookie   ┌────────────────────────────┐      ┌───────────────┐
-│ React SPA (Vercel)   │ ───────────────────────────────▶ │ Express API (Render)       │ ───▶ │ MongoDB Atlas │
+│ React SPA (Vercel)   │ ───────────────────────────────▶ │ Express API (Vercel fn)    │ ───▶ │ MongoDB Atlas │
 │ pages, modals, tabs  │ ◀─────────────────────────────── │ routes → middleware →      │      │ users, groups │
 │ AuthContext, Axios   │   { success, data | error }      │ controllers → services     │      │ expenses,     │
 └──────────────────────┘                                  └────────────────────────────┘      │ settlements   │
