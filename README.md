@@ -2,7 +2,7 @@
 
 Split shared expenses with friends, roommates and trip-mates, see who owes whom, and settle up in the fewest payments possible.
 
-**Live app:** https://split-ease-1iqb.vercel.app · **API:** https://split-ease-mu-flame.vercel.app/api/health · **Demo video:** _add link_
+**Live app:** https://split-ease-1iqb.vercel.app · **API:** https://split-ease-mu-flame.vercel.app/api/health · **Demo video:** https://youtu.be/fXUESQm2E-I
 
 **Demo login:** `asha@demo.com` / `demo1234` (also `bob@demo.com`, `cara@demo.com`), already a member of a seeded "Goa Trip" group.
 
