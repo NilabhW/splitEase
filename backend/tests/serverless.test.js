@@ -8,6 +8,9 @@ let handler;
 beforeAll(async () => {
   mongod = await MongoMemoryServer.create();
   process.env.MONGO_URI = mongod.getUri();
+  // Other test files share this process and may have cached env.js with the default local URI.
+  delete require.cache[require.resolve('../src/config/env')];
+  delete require.cache[require.resolve('../api/index')];
   handler = require('../api/index');
 });
 
